@@ -1,1 +1,1 @@
-# acm_test_generator
+# ACM test generator
