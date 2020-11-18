@@ -54,5 +54,16 @@ namespace TestGenerator.Extensions
         {
             return random.NextLong(long.MinValue, long.MaxValue);
         }
+
+
+        /// <summary>
+        ///     Returns a random bool value
+        /// random.Next())
+        /// </summary>
+        /// <param name="random">The given random instance</param>
+        public static bool NextBool(this Random random)
+        {
+            return random.Next(1, 3) % 2 == 0;
+        }
     }
 }

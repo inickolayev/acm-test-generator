@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TestGenerator
 {
@@ -25,6 +26,12 @@ namespace TestGenerator
             return this;
         }
 
+        public TestBuilder AddNumbers(params long[] nums)
+        {
+            _testLines.Add(new TestLine(string.Join(' ', nums)));
+            return this;
+        }
+
         public TestBuilder GenerateNumber(long minValue = long.MinValue, long maxValue = long.MaxValue)
             => GenerateNumbers(1, minValue, maxValue);
 
@@ -33,6 +40,21 @@ namespace TestGenerator
             _testLines.Add(new TestLine(
                 string.Join(' ', GeneratorHelper.GenerateArray(size, minValue, maxValue)))
             );
+            return this;
+        }
+
+        public TestBuilder AddStrings(params string[] strs)
+        {
+            _testLines.Add(new TestLine(string.Join(' ', strs)));
+            return this;
+        }
+
+        public TestBuilder GenerateString(int length, string alphabet)
+        {
+            var str = string.Join("",
+                Enumerable.Range(1, length).Select(i => alphabet[new Random().Next(1, alphabet.Length)])
+            );
+            _testLines.Add(new TestLine(str));
             return this;
         }
 

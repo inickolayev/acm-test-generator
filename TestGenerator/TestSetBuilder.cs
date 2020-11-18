@@ -17,6 +17,17 @@ namespace TestGenerator
             return testBuilder;
         }
 
+        public TestBuilder AddTest(Func<TestBuilder, TestBuilder> handleTest)
+        {
+            var testBuilder = new TestBuilder(t =>
+            {
+                _tests.Add(t);
+                return this;
+            });
+            handleTest(testBuilder);
+            return testBuilder;
+        }
+
         public TestSet BuildTestSet()
         {
             return new TestSet(_tests);
