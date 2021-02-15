@@ -35,6 +35,22 @@ namespace TestGenerator
             return str;
         }
 
+        public static T[] Shake<T>(params T[] args)
+        {
+            int l = args.Length;
+            for (int i = 0; i < l; i++)
+            {
+                if (new Random().NextBool())
+                {
+                    var newInd = new Random().Next(0, l);
+                    T tmp = args[i];
+                    args[i] = args[newInd];
+                    args[newInd] = tmp;
+                }
+            }
+            return args;
+        }
+
         public static string Shake(string str)
         {
             int l = str.Length;

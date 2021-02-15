@@ -32,6 +32,12 @@ namespace TestGenerator
             return this;
         }
 
+        public TestBuilder AddObjects(params object[] args)
+        {
+            _testLines.Add(new TestLine(string.Join(' ', args)));
+            return this;
+        }
+
         public TestBuilder GenerateNumber(long minValue = long.MinValue, long maxValue = long.MaxValue)
             => GenerateNumbers(1, minValue, maxValue);
 
