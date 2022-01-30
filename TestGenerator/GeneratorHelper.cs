@@ -11,14 +11,14 @@ namespace TestGenerator
         public const string LOWER_CASE_ALPHABET = "abcdefghijklmnopqrstuvwxyz";
         public const string UPPER_CASE_ALPHABET = "abcdefghijklmnopqrstuvwxyz";
 
-        public static List<long> GenerateArray(int size, long minValue = long.MinValue, long maxValue = long.MaxValue)
+        public static long[] GenerateNumbers(int size, long minValue = long.MinValue, long maxValue = long.MaxValue)
         {
             var arr = new List<long>();
             for (int i = 0; i < size; i++)
             {
                 arr.Add(new Random().NextLong(minValue, maxValue));
             }
-            return arr;
+            return arr.ToArray();
         }
 
         public static string GenerateLowerString(int length)

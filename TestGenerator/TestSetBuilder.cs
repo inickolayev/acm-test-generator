@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TestGenerator
 {
     public class TestSetBuilder
     {
-        private readonly List<Test> _tests = new List<Test>();
+        private readonly List<TestBuilder> _testBuilders = new List<TestBuilder>();
         private readonly bool _logToConsole;
 
         public TestSetBuilder(bool logToConsole = true)
@@ -13,39 +14,43 @@ namespace TestGenerator
             _logToConsole = logToConsole;
         }
 
-        public TestBuilder AddTest()
+        public TestSetBuilder AddTest()
         {
             var testBuilder = new TestBuilder(t =>
             {
-                _tests.Add(t);
                 if (_logToConsole)
-                    Console.WriteLine($"Finished test #{_tests.Count}");
-                return this;
+                    Console.WriteLine($"Finished test #{_testBuilders.Count}");
+                return t;
             });
-            return testBuilder;
+            _testBuilders.Add(testBuilder);
+            return this;
         }
 
-        public TestBuilder AddTest(Func<TestBuilder, TestBuilder> handleTest)
+        public TestSetBuilder AddTest(Action<TestBuilder> handleTest)
         {
             var testBuilder = new TestBuilder(t =>
             {
-                _tests.Add(t);
                 if (_logToConsole)
-                    Console.WriteLine($"Finished test #{_tests.Count}");
-                return this;
+                    Console.WriteLine($"Finished test #{_testBuilders.Count}");
+                return t;
             });
             handleTest(testBuilder);
-            return testBuilder;
+            _testBuilders.Add(testBuilder);
+            return this;
         }
 
         public TestSet BuildTestSet()
         {
             if (_logToConsole)
-                Console.WriteLine($"Finished testset with count = {_tests.Count}");
-            return new TestSet(_tests);
+                Console.WriteLine($"Finished testset with count = {_testBuilders.Count}");
+            var tests = _testBuilders.Select(tb => tb.BuildTest()).ToArray();
+            return new TestSet(tests);
         }
 
-        public TestSetBuilder For(int start, int end, Func<int, TestSetBuilder, TestSetBuilder> generateTest)
+        public TestSetBuilder AddRange(int start, int end, Action<TestSetBuilder> generateTest)
+            => AddRange(start, end, (ind, tsb) => generateTest(tsb));
+
+        public TestSetBuilder AddRange(int start, int end, Action<int, TestSetBuilder> generateTest)
         {
             for (int i = start; i <= end; i++)
                 generateTest(i, this);
@@ -54,8 +59,8 @@ namespace TestGenerator
 
         public TestSetBuilder EnshureTestCountEquals(int count)
         {
-            if (_tests.Count != count)
-                throw new Exception($"Count of tests must be {count}, but is {_tests.Count}");
+            if (_testBuilders.Count != count)
+                throw new Exception($"Count of tests must be {count}, but is {_testBuilders.Count}");
             return this;
         }
     }

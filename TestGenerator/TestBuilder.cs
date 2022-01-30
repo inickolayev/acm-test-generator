@@ -6,18 +6,19 @@ namespace TestGenerator
 {
     public class TestBuilder
     {
-        private readonly Func<Test, TestSetBuilder> _onBuild;
+        private readonly Func<Test, Test> _onBuild;
         private readonly List<TestLine> _testLines = new List<TestLine>();
 
         private TestBuilder _forBuilder;
         private int _forStart;
         private int _forEnd;
 
-        public TestBuilder(Func<Test, TestSetBuilder> onBuild)
+        public TestBuilder(Func<Test, Test> onBuild)
         {
             _onBuild = onBuild;
         }
-        public TestSetBuilder BuildTest()
+        
+        public Test BuildTest()
             => _onBuild(new Test(_testLines));
 
         public TestBuilder AddNumbers(params int[] nums)
@@ -44,7 +45,7 @@ namespace TestGenerator
         public TestBuilder GenerateNumbers(int size, long minValue = long.MinValue, long maxValue = long.MaxValue)
         {
             _testLines.Add(new TestLine(
-                string.Join(' ', GeneratorHelper.GenerateArray(size, minValue, maxValue)))
+                string.Join(' ', GeneratorHelper.GenerateNumbers(size, minValue, maxValue)))
             );
             return this;
         }
@@ -64,17 +65,14 @@ namespace TestGenerator
             return this;
         }
 
-        public TestBuilder For(int start, int end, Func<int, TestBuilder, TestBuilder> generateTest)
+        public TestBuilder AddRange(int start, int end, Action<TestBuilder> generateTest)
+            => AddRange(start, end, (ind, tsb) => generateTest(tsb));
+
+        
+        public TestBuilder AddRange(int start, int end, Action<int, TestBuilder> generateTest)
         {
             for (int i = start; i <= end; i++)
                 generateTest(i, this);
-            return this;
-        }
-
-        public TestBuilder EndFor()
-        {
-            for(int i = _forStart; i <= _forEnd; i++)
-                _testLines.AddRange(_forBuilder._testLines);
             return this;
         }
     }

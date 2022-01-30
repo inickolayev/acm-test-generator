@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace TestGenerator
@@ -14,10 +15,15 @@ namespace TestGenerator
             _tests = tests;
         }
 
-        public void WriteToFiles(Func<Test, int, string> getName)
+        public void WriteToFiles(string pathName = ".")
+            => WriteToFiles(pathName, (test, ind) => $"{ind}.in");
+
+        public void WriteToFiles(string pathName, Func<Test, int, string> getName)
         {
-            foreach (var (test, ind) in _tests.Select((t, i) => (t, i)))
-                test.WriteToFile(getName(test, ind));
+            if (!Directory.Exists(pathName))
+                Directory.CreateDirectory(pathName);
+            foreach (var (test, ind) in _tests.Select((t, i) => (t, i + 1)))
+                test.WriteToFile(Path.Join(pathName, getName(test, ind)));
         }
 
         public void WriteToConsole(string testSetName = "TestSet:")
